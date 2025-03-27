@@ -54,6 +54,61 @@ public class EmployeeService {
 		return emp;
 	}
 
+	public Boolean deleteById(long id) {
+		boolean status=employeeRepository.existsById(id);
+		if(status)
+		{
+			employeeRepository.deleteById(id);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public Boolean deleteAll() {
+		long count=employeeRepository.count();
+		if(count>0)
+		{
+			employeeRepository.deleteAll();;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public Boolean deleteByEmail(String email) {
+	    boolean status = employeeRepository.existsByEmail(email); 
+	    if (status) {
+	        employeeRepository.deleteByEmail(email);
+	        return true;
+	    }
+	    return false;
+	}
+
+	public Employee updateById(long id, Employee employee) {
+		Optional<Employee> optionalemp=employeeRepository.findById(id);
+		if(optionalemp.isPresent())
+		{
+			Employee emp=optionalemp.get();
+			emp.setName(employee.getName());
+			emp.setSalary(employee.getSalary());
+			emp.setDept(employee.getDept());
+			emp.setGender(employee.getGender());
+			emp.setEmail(employee.getEmail());
+		
+		return employeeRepository.save(emp);
+		}
+		else 
+		{
+			return null;
+		}
+	}
+
+
 	
 
 
