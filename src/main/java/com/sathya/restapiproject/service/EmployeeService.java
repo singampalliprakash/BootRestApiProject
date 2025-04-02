@@ -1,9 +1,11 @@
 package com.sathya.restapiproject.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.sathya.restapiproject.data.Employee;
 import com.sathya.restapiproject.repository.EmployeeRepository;
@@ -21,7 +23,7 @@ public class EmployeeService {
         return employeeRepository.saveAll(employees);
     }
 
-	public Optional<Employee> getEmployeeById(long id) {
+	public Optional<Employee> getEmpById(long id) {
 	    return employeeRepository.findById(id);
 	}
 	
@@ -108,10 +110,47 @@ public class EmployeeService {
 		}
 	}
 
-
-	
-
-
-	
-
+	public Optional<Employee> partialUpdateEmployee(long id, Map<String, Object> updates) {
+		Optional<Employee> optionalemp= employeeRepository.findById(id);
+		if(optionalemp.isPresent())
+		{
+			Employee existingEmp=optionalemp.get();
+			updates.forEach((key,value)->
+			{
+				switch (key) {
+				case "name": 
+					existingEmp.setName((String)value);
+					break;
+				case "gender": 
+					existingEmp.setGender((String)value);
+					break;
+				case "email": 
+					existingEmp.setEmail((String)value);
+					break;
+				case "dept": 
+					existingEmp.setDept((String)value);
+					break;
+				case "salary": 
+					existingEmp.setSalary((double)value);
+					break;
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + key);
+				}
+			});
+			Employee employee=employeeRepository.save(existingEmp);
+			return Optional.of(employee);
+			
+				 
+			}
+		else
+		{
+			return Optional.empty();
+		}
+		}
 }
+		
+	
+
+
+	
+
