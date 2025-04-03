@@ -2,13 +2,14 @@ package com.sathya.restapiproject.controller;
 
 import java.time.LocalDateTime;
 
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sathya.restapiproject.data.Employee;
 import com.sathya.restapiproject.data.ErrorResponse;
 import com.sathya.restapiproject.service.EmployeeService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,39 +40,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class EmployeeController {
 	@Autowired
 	EmployeeService employeeService;
-//	@PostMapping("/saveemployee")
-//	public ResponseEntity<Employee> saveEmployeeData(@RequestBody Employee employee) 
-//	{
-//
-//		Employee emp= employeeService.saveEmployeeData(employee);
-//		return (ResponseEntity<Employee>) ResponseEntity.status(HttpStatus.CREATED)
-//				.header("info", "data saved succesfully---")
-//				.body(emp);
-//	}
 	@PostMapping("/saveemployee")
-	public ResponseEntity<EntityModel<Employee>> saveEmployeeData(@RequestBody Employee employee) {
-	    // Save Employee Data
-	    Employee emp = employeeService.saveEmployeeData(employee);
+	public ResponseEntity<Employee> saveEmployeeData(@Valid @RequestBody Employee employee) 
+	{
 
-	    // Create HATEOAS links
-	    EntityModel<Employee> entityModel = EntityModel.of(emp);
-
-	    entityModel.add(linkTo(methodOn(EmployeeController.class).getEmployee(emp.getId())).withSelfRel());//get
-	    entityModel.add(linkTo(methodOn(EmployeeController.class).updateEmployee(emp.getId(), emp)).withRel("update"));//put
-	    entityModel.add(linkTo(methodOn(EmployeeController.class).patchEmployee(emp.getId(), emp)).withRel("patch"));//patch
-	    entityModel.add(linkTo(methodOn(EmployeeController.class).deleteEmployee(emp.getId())).withRel("delete"));//delete
-
-	    return ResponseEntity.status(HttpStatus.CREATED)
-	            .header("info", "Data saved successfully")
-	            .body(entityModel);
+		Employee emp= employeeService.saveEmployeeData(employee);
+		return (ResponseEntity<Employee>) ResponseEntity.status(HttpStatus.CREATED)
+				.header("info", "data saved succesfully---")
+				.body(emp);
 	}
-
-	private Object methodOn(Class<EmployeeController> class1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	}
+	
 	
 	@PostMapping("/saveallemployee")
     public ResponseEntity<List<Employee>> saveallEmployeeData(@RequestBody List<Employee> employees) {
@@ -80,8 +60,8 @@ public class EmployeeController {
 	}
 	
 	@GetMapping("/getempbyid/{id}")
-    public ResponseEntity<?> getEmpById(@PathVariable long id) {
-        Optional<Employee> emp = employeeService.getEmpById(id);
+    public ResponseEntity<?> getEmployeeById(@PathVariable long id) {
+        Optional<Employee> emp = employeeService.getEmployeeById(id);
 
         if (emp.isPresent()) {
             Employee employee = emp.get();
@@ -102,7 +82,7 @@ public class EmployeeController {
 	
 	
 	@GetMapping("/getempbyemail/{email}")
-	public ResponseEntity<?> getEmpByEmail(@PathVariable String email) {
+	public ResponseEntity<?> getEmployeeByEmail(@PathVariable String email) {
 	    Optional<Employee> emp = employeeService.getEmployeeByEmail(email);
 
 	    if (emp.isPresent()) {
@@ -286,14 +266,32 @@ public class EmployeeController {
                      .body(List.of("sravya", "sai", "anu", "sathya"));
         }
         
-        
+        @PostMapping("/saveEmployee1")
+    	public ResponseEntity<EntityModel<Employee>> saveEmployeeData1(@RequestBody Employee employee) {
+    	    
+    	    Employee emp = employeeService.saveEmployeeData(employee);
 
+    	    // Create the EntityModel with employee data.
+    	    EntityModel<Employee> entityModel = EntityModel.of(emp);
+
+    	    // Add the links to EntityModel.
+    	    entityModel.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(EmployeeController.class).getEmployeeById(emp.getId()))
+    	        .withSelfRel());
+
+    	    entityModel.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(EmployeeController.class).deleteById(emp.getId()))
+    	        .withRel("Delete")); 
+
+    	    entityModel.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(EmployeeController.class).updateById(emp.getId(), emp))
+    	        .withRel("put"));
+
+    	    entityModel.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(EmployeeController.class).partialUpdateEmployee(emp.getId(), new HashMap<>()))
+    	        .withRel("patch"));
+
+    	    return ResponseEntity.status(HttpStatus.CREATED)
+    	        .header("info", "Data saved successfully...")
+    	        .body(entityModel);
+    	}
         
-	
-	
-	
-	
-	
 	
 	}
 	

@@ -1,6 +1,7 @@
 package com.sathya.restapiproject.service;
 
 import java.util.List;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -14,16 +15,25 @@ import com.sathya.restapiproject.repository.EmployeeRepository;
 public class EmployeeService {
 	@Autowired
 	EmployeeRepository employeeRepository;
+	private void validateDepartment(String dept) {
+	    List<String> allowedDepartments = List.of("HR", "FINANCE", "IT");
+	    if (!allowedDepartments.contains(dept)) {
+	        throw new IllegalArgumentException("Invalid department! Allowed values: HR, FINANCE, IT");
+	    }
+	}
 
 	public Employee saveEmployeeData(Employee employee) {
-		return employeeRepository.save(employee);
+	    validateDepartment(employee.getDept());
+	    return employeeRepository.save(employee);
 	}
+
+
 
 	public List<Employee> saveEmployeesData(List<Employee> employees) {
         return employeeRepository.saveAll(employees);
     }
 
-	public Optional<Employee> getEmpById(long id) {
+	public Optional<Employee> getEmployeeById(long id) {
 	    return employeeRepository.findById(id);
 	}
 	
