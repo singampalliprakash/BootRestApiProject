@@ -16,9 +16,9 @@ public class EmployeeService {
 	@Autowired
 	EmployeeRepository employeeRepository;
 	private void validateDepartment(String dept) {
-	    List<String> allowedDepartments = List.of("HR", "FINANCE", "IT");
+	    List<String> allowedDepartments = List.of("HR", "FINANCE", "IT","MANAGER");
 	    if (!allowedDepartments.contains(dept)) {
-	        throw new IllegalArgumentException("Invalid department! Allowed values: HR, FINANCE, IT");
+	        throw new IllegalArgumentException("Invalid department! Allowed values: HR, FINANCE, IT,Manager");
 	    }
 	}
 
